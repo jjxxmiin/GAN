@@ -1,2 +1,5 @@
-# my_gan
-gan study
+# gan 
+- gan
+- dcgan
+- cyclegan 
+
