@@ -1,2 +1,5 @@
-# my_gan
-gan study
+# gan 구현하기
+- gan
+- dcgan
+- cyclegan 
+
