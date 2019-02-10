@@ -25,7 +25,6 @@ class DCGAN:
                  img_shape = [64,64,3],
                  batch_size = 128,
                  total_epoch = 5,
-                 total_batch = 100,
                  learning_rate = 0.0002,
                  noise_n = 100):
 
@@ -33,7 +32,6 @@ class DCGAN:
         self.img_shape = img_shape
         self.batch_size = batch_size
         self.total_epoch = total_epoch
-        self.total_batch = total_batch
         self.learning_rate = learning_rate
         self.noise_n = noise_n
 
