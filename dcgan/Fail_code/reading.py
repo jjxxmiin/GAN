@@ -1,14 +1,6 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Feb  6 18:08:17 2019
-
-@author: JM
-"""
-
-import cv2
 import os
+import scipy.misc as sm
 import numpy as np
-import random
 import time
 
 class reader:
@@ -48,10 +40,11 @@ class reader:
         #6331번
         for file_name in file_list_batch:
                 dir_n = self.dir_name + file_name
-                img = cv2.imread(dir_n,  cv2.IMREAD_COLOR)
-                res = cv2.resize(img,(64,64), interpolation = cv2.INTER_AREA)
+                img = sm.imread(dir_n)
+                res = sm.imresize(img,(64,64))
                 batch.append(res)
         
         end = time.time()
         
         return np.array(batch)
+
