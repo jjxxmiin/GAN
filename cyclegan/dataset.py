@@ -1,5 +1,5 @@
 from tqdm import tqdm
-import requests
+import request
 import os
 import math
 import zipfile
@@ -17,7 +17,7 @@ class dataset:
 
         wrote = 0
         chunkSize = 1024
-        r = requests.get(self.url, stream=True)
+        r = request.get(self.url, stream=True)
         total_size = int(r.headers['Content-Length'])
         with open(self.filename, 'wb') as f:
             for data in tqdm(r.iter_content(chunkSize), total=math.ceil(total_size // chunkSize), unit='KB',
