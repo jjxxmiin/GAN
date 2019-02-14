@@ -100,6 +100,9 @@ class pix2pix:
 
         def generate(self,img):
             # 256x256x3 -> 128x128x64
+            # padding
+            # SAME : appropriate pad
+            # VALID : zero pad
             layer_1 = skip_1 = tf.nn.conv2d(img,self.G_W1,strides=[1,2,2,1],padding='SAME')
             layer_1 = tf.nn.leaky_relu(layer_1,alpha=0.2)
 
@@ -135,8 +138,7 @@ class pix2pix:
             layer_9 = tf.nn.conv2d_transpose(layer_8,
                                              self.G_W9,
                                              output_shape=[self.batch_size,2,2,512],
-                                             strides=[1,2,2,1],
-                                             padding='SAME')
+                                             strides=[1,2,2,1])
             layer_9 = tf.nn.dropout(self.G_bn9(layer_9), keep_prob=self.keep_prob)
             layer_9 = tf.nn.relu(layer_9)
             layer_9 = tf.concat([layer_9,skip_7], axis=3)
@@ -196,8 +198,32 @@ class pix2pix:
 
             return output_
 
-        def discriminate(self,img,)
+        def discriminate(self,img,target):
+            # img : real_img
+            # target : trans_img
+            img_concat = tf.concat([img,target],axis=3) # channel concat
 
+            layer_1 = tf.nn.conv2d(img_concat,self.D_W1,strides=[1,2,2,1],padding='SAME')
+            layer_1 = tf.nn.leaky_relu(self.D_bn1(layer_1),alpha=0.2)
+
+            layer_2 = tf.nn.conv2d(layer_1,self.D_W2,strides=[1,2,2,1],padding='SAME')
+            layer_2 = tf.nn.leaky_relu(self.D_bn2(layer_2),alpha=0.2)
+
+            layer_3 = tf.nn.conv2d(layer_2,self.D_W3,strides=[1,2,2,1],padding='SAME')
+            layer_3 = tf.nn.leaky_relu(self.D_bn3(layer_3),alpha=0.2)
+
+            layer_4 = tf.pad(layer_3,[[0,0],[1,1],[1,1],[0,0]],mode='CONSTANT')
+            layer_4 = tf.nn.conv2d(layer_4,self.D_W4,strides=[1,1,1,1],padding='VALID')
+            layer_4 = tf.nn.leaky_relu(self.D_bn4(layer_4),alpha=0.2)
+
+            layer_5 = tf.pad(layer_4,[[0,0],[1,1],[1,1],[0,0]],mode='CONSTANT')
+            layer_5 = tf.nn.conv2d(layer_5,self.D_W5,strides=[1,1,1,1],padding='VALID')
+
+            output_ = tf.nn.sigmoid(layer_5)
+
+            return output_
+
+        
 
 
 
