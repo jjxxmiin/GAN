@@ -21,15 +21,13 @@ class batch_norm(object):
 
 class pix2pix:
     def __init__(self,
-                 img_shape = [256,256,3],
-                 batch_size = 128,
-                 total_epoch = 5,
+                 img_shape,
+                 batch_size,
                  learning_rate = 0.0002,
                  keep_prop = 0.5):
         # hyper parameter
         self.img_shape = img_shape
         self.batch_size = batch_size
-        self.total_epoch = total_epoch
         self.learning_rate = learning_rate
         self.keep_prop = keep_prop
         # generate Variable(encoder-decoder)
@@ -97,6 +95,32 @@ class pix2pix:
 
         self.D_W5 = tf.Variable(tf.truncated_normal([4, 4, 512, 1], stddev=0.02), name='D_W5')
 
+        self.G_var_list = [
+            self.G_W1,
+            self.G_W2,
+            self.G_W3,
+            self.G_W4,
+            self.G_W5,
+            self.G_W6,
+            self.G_W7,
+            self.G_W8,
+            self.G_W9,
+            self.G_W10,
+            self.G_W11,
+            self.G_W12,
+            self.G_W13,
+            self.G_W14,
+            self.G_W15,
+            self.G_W16
+        ]
+
+        self.D_var_list = [
+            self.D_W1,
+            self.D_W2,
+            self.D_W3,
+            self.D_W4,
+            self.D_W5
+        ]
 
         def generate(self,img):
             # 256x256x3 -> 128x128x64
