@@ -36,16 +36,12 @@ class reader:
         file_list_batch = self.file_list[self.index * self.batch_size:(self.index + 1) * self.batch_size]
         self.index += 1
 
-        start = time.time()
-
         # 6331번
         for file_name in file_list_batch:
             dir_n = self.dir_name + file_name
             img = scipy.misc.imread(dir_n)
             res = scipy.misc.imresize(img, self.resize)
             batch.append(res)
-
-        end = time.time()
 
         return np.array(batch).astype(np.float32)
 
