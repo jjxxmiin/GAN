@@ -37,7 +37,10 @@ class dataset:
             zf.close()
         print('unzip success')
 
+
 '''
+#exeample
+
 url = "https://people.eecs.berkeley.edu/~taesung_park/CycleGAN/datasets/vangogh2photo.zip"
 filename = url.split("/")[-1]
 

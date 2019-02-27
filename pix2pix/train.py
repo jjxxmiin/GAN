@@ -18,10 +18,10 @@ def input_denormalization(img):
     return (img + 1.) / 2
 
 #init
-total_epoch = 200
+total_epoch = 8
 resize_shape = [256,512,3]
 image_shape = [256,256,3]
-batch_size = 1
+batch_size = 4
 learning_rate = 0.0002
 EPS = 1e-12
 dir = 'G:/dataset/'
@@ -30,7 +30,7 @@ dir = 'G:/dataset/'
 model = pix2pix(img_shape=resize_shape,batch_size=batch_size,learning_rate=learning_rate)
 
 # dataset
-data = reader.reader(dir_name="G:/dataset/maps/train/",batch_size=batch_size,resize=resize_shape)
+data = reader.reader(dir_name="G:/dataset/edges2shoes/train/",batch_size=batch_size,resize=resize_shape)
 
 # totalbatch
 total_batch = data.total_batch
