@@ -21,7 +21,7 @@ def input_denormalization(img):
 total_epoch = 200
 resize_shape = [256,512,3]
 image_shape = [256,256,3]
-batch_size = 4
+batch_size = 1
 learning_rate = 0.0002
 EPS = 1e-12
 dir = 'G:/dataset/'
@@ -53,7 +53,7 @@ d_fake = model.discriminate(input_img, gen_img)
 d_cost = -tf.reduce_mean(tf.log(d_real + EPS) + tf.log(1 - d_fake + EPS))
 
 # generate cost
-g_cost_GAN = -tf.reduce_mean(tf.log(d_fake + EPS))
+g_cost_GAN = tf.reduce_mean(-tf.log(d_fake + EPS))
 g_cost_L1 = tf.reduce_mean(tf.abs(target_img - gen_img))
 g_cost = g_cost_GAN + g_cost_L1 * 100
 
