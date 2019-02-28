@@ -92,12 +92,13 @@ with tf.Session() as sess:
                                                              target_img:target})
             _, loss_val_GAN, loss_val_L1 = sess.run([g_train,g_cost_GAN,g_cost_L1],feed_dict={input_img:real,
                                                                                       target_img:target})
-            print('Epoch: [', epoch, '/', total_epoch, '], ', 'Step: [', step, '/', total_batch,
-                  '], D_loss: ',
-                  loss_val_D, ', GAN_loss: ', loss_val_GAN, ', L1_loss: ', loss_val_L1)
 
-            if step == 0 or (step + 1) % 200 == 0:
+            if step == 0 or (step + 1) % 500 == 0:
                 '''여기에다 이미지 변환/저장'''
+                print('Epoch: [', epoch, '/', total_epoch, '], ', 'Step: [', step, '/', total_batch,
+                      '], D_loss: ',
+                      loss_val_D, ', GAN_loss: ', loss_val_GAN, ', L1_loss: ', loss_val_L1)
+
                 samples = input_denormalization(model.sample_generate(real,image_shape,sess))
                 real = input_denormalization(real)
                 target = input_denormalization(target)

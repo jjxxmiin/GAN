@@ -1,22 +1,6 @@
 import tensorflow as tf
-
-class batch_norm(object):
-    def __init__(self, epsilon=1e-5, momentum=0.9, name="batch_norm"):
-        with tf.variable_scope(name):
-            self.epsilon = epsilon
-            self.momentum = momentum
-            self.name = name
-
-    def __call__(self, x, train=True):
-        return tf.contrib.layers.batch_norm(x,
-                                            decay=self.momentum,
-                                            updates_collections=None,
-                                            epsilon=self.epsilon,
-                                            scale=True,
-                                            is_training=train,
-                                            scope=self.name,
-                                            reuse=tf.AUTO_REUSE     # if tensorflow vesrion < 1.4, delete this line
-                                            )
+from ops import *
+from utils import *
 
 class cyclegan:
     def __init__(self,
@@ -62,27 +46,26 @@ class cyclegan:
         self.G_W6 = tf.Variable(tf.truncated_normal([7,7,64,3], stddev=0.2), name='G_W6')
 
 
-    def generate(self,img):
-        def residule_block(x,dim):
-            y = tf.nn.conv2d(x,)
+    def generate(self,img,scope='generator'):
+        with tf.variable_scope(scope,reuse=False):
+            layer_1 = conv(img,64,kernel=7,stride=1,pad=3,pad_type='reflect',scope='layer_1')
+            layer_1 = instance_norm(layer_1)
+            layer_1 = relu(layer_1)
 
+            layer_2 = conv(layer_1,128,kernel=3,stride=2,pad=1,pad_type='zero',scope='layer_2')
+            layer_2 = instance_norm(layer_2)
+            layer_2 = relu(layer_2)
 
-        # 256x256x3 -> 128x128x64
-        layer_1 = tf.nn.conv2d(img,self.G_W1,strides=[1,2,2,1],padding='SAME')
-        layer_1 = tf.nn.relu(layer_1,alpha=0.2)
-        # 128x128x64 -> 64x64x128
-        layer_2 = tf.nn.conv2d(layer_1,self.G_W2,strides=[1,2,2,1],padding='SAME')
-        layer_2 = self.G_bn2(layer_2)
-        layer_2 = tf.nn.relu(layer_2,alpha=0.2)
-        #64x64x128 -> 32x32x256
-        layer_3 = layer_res_1 = tf.nn.conv2d(layer_2,self.G_W3,strides=[1,2,2,1],padding='SAME')
-        layer_3 = self.G_bn3(layer_3)
-        layer_3 = tf.nn.relu(layer_3, alpha=0.2)
-        #32x32x256 -> 32x32x256
-        layer_4 = layer_res_2 = tf.nn.conv2d(layer_3,self.G_res1,strides=[1,2,2,1],padding='SAME')
-        layer_4 = self.G_bn_res1(layer_4)
-        layer_4 = tf.nn.relu(layer_4, alpha=0.2)
+            layer_3 = conv(layer_2, 256, kernel=3, stride=2, pad=1, pad_type='zero', scope='layer_3')
+            layer_3 = instance_norm(layer_3)
+            layer_3 = relu(layer_3)
 
-        layer_4 = tf.nn.conv2d(layer_3,self.G_res1,strides=[1,2,2,1],padding='SAME')
-        
+            layer_4 = resblock(layer_3,256,scope='resblock_1')
+            layer_5 = resblock(layer_4, 256, scope='resblock_2')
+            layer_6 = resblock(layer_5, 256, scope='resblock_3')
+            layer_7 = resblock(layer_6, 256, scope='resblock_4')
+            layer_8 = resblock(layer_7, 256, scope='resblock_5')
+            layer_9 = resblock(layer_8, 256, scope='resblock_6')
+
+            layer_10 = deconv(layer_9,)
 
