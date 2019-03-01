@@ -93,6 +93,7 @@ def resblock(x,filter,scope='resblock'):
 # ===================================== Loss ================================================
 # d_cost real=up fake=down
 def d_cost(real,fake):
+    #LSGAN
     real_cost = tf.reduce_mean(tf.squared_difference(real,1.0))
     fake_cost = tf.reduce_mean(tf.square(fake))
 
@@ -100,6 +101,7 @@ def d_cost(real,fake):
 
 # g_cost fake up
 def g_cost(fake):
+    #LSGAN
     fake_cost = tf.reduce_mean(tf.squared_difference(fake, 1.0))
 
     return fake_cost

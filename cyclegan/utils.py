@@ -144,3 +144,17 @@ def batch_save(X,nh_nw,path):
         img[j * h:j * h + h, i * w:i * w + w, :] = x
 
     misc.imsave(path,img)
+
+def split_image(img):
+    tmp = np.split(img,2,axis=2)
+    img_A = tmp[0]
+    img_B = tmp[1]
+
+    return img_A,img_B
+
+# input_normalization
+def input_normalization(img):
+    return np.array(img) * (2.0 / 255.0) - 1
+
+def input_denormalization(img):
+    return (img + 1.) / 2
