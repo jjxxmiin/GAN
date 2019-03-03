@@ -12,7 +12,7 @@ import zipfile
 # https://people.eecs.berkeley.edu/~tinghuiz/projects/pix2pix/datasets/
 
 class reader:
-    def __init__(self, dir_name, batch_size,resize):
+    def __init__(self, dir_name, batch_size=None,resize=None):
         self.dir_name = dir_name
         self.batch_size = batch_size
         self.resize = resize
@@ -84,6 +84,28 @@ class dataset:
             zf.extractall(path=savepath)
             zf.close()
         print('unzip success')
+
+class ImageData:
+
+    def __init__(self, load_size, channels, augment_flag=False):
+        self.load_size = load_size
+        self.channels = channels
+        self.augment_flag = augment_flag
+
+    def image_processing(self, filename):
+        x = tf.read_file(filename)
+        x_decode = tf.image.decode_jpeg(x, channels=self.channels)
+        img = tf.image.resize_images(x_decode, [self.load_size, self.load_size])
+        img = tf.cast(img, tf.float32) / 127.5 - 1
+
+        if self.augment_flag :
+            augment_size = self.load_size + (30 if self.load_size == 256 else 15)
+            p = random.random()
+            if p > 0.5:
+                img = augmentation(img, augment_size)
+
+        return img
+
 
 def load_test_data(image_path, size=256):
     img = misc.imread(image_path, mode='RGB')
@@ -157,4 +179,28 @@ def input_normalization(img):
     return np.array(img) * (2.0 / 255.0) - 1
 
 def input_denormalization(img):
-    return (img + 1.) / 2
+    return (img + 1.) // 2
+
+def load(checkpoint_dir,sess,saver):
+    import re
+    print(" [*] Reading checkpoints...")
+    checkpoint_dir = os.path.join(checkpoint_dir, "model")
+
+    ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
+    if ckpt and ckpt.model_checkpoint_path:
+        ckpt_name = os.path.basename(ckpt.model_checkpoint_path)
+        saver.restore(sess, os.path.join(checkpoint_dir, ckpt_name))
+        counter = int(next(re.finditer("(\d+)(?!.*\d)", ckpt_name)).group(0))
+        print(" [*] Success to read {}".format(ckpt_name))
+        return True, counter
+    else:
+        print(" [*] Failed to find a checkpoint")
+        return False, 0
+
+def save(checkpoint_dir, step, sess, saver):
+    checkpoint_dir = os.path.join(checkpoint_dir, "model")
+
+    if not os.path.exists(checkpoint_dir):
+        os.makedirs(checkpoint_dir)
+
+    saver.save(sess, os.path.join(checkpoint_dir, 'cyclegan.model'), global_step=step)
