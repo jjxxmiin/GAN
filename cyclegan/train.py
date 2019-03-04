@@ -8,10 +8,11 @@ from tensorflow.contrib.data import batch_and_drop_remainder
 # init
 img_ch = 3
 img_size = 256
-learning_rate = 0.0002
-gan_w = 1.0
-cycle_w = 10.0
-identity_w = 5.0
+learning_rate = 0.0003
+# feature weight
+gan_w = 1.0 # X -> Y'            1 *loss(Y:Y')
+cycle_w = 10.0 # X -> Y' -> X''  10*loss(X:X'')
+identity_w = 5.0 # Y -> X'       5 *loss(X:X')
 epoch = 2
 iteration = 100000
 batch_size = 1
@@ -100,8 +101,8 @@ t_vars = tf.trainable_variables()
 G_var_list = [var for var in t_vars if 'generate' in var.name]
 D_var_list = [var for var in t_vars if 'discriminate' in var.name]
 
-G_train = tf.train.AdamOptimizer(learning_rate).minimize(G_loss,var_list=G_var_list)
-D_train = tf.train.AdamOptimizer(learning_rate).minimize(D_loss,var_list=D_var_list)
+G_train = tf.train.AdamOptimizer(learning_rate,beta1=0.5).minimize(G_loss,var_list=G_var_list)
+D_train = tf.train.AdamOptimizer(learning_rate,beta1=0.5).minimize(D_loss,var_list=D_var_list)
 
 # summary
 all_G_loss = tf.summary.scalar("Generator_loss", G_loss)
@@ -166,13 +167,14 @@ with tf.Session() as sess:
             print("Epoch: [%2d] [%6d/%6d] time: %4.4f d_loss: %.8f, g_loss: %.8f" \
                   % (epoch, i, iteration, time.time() - start_time, d_loss, g_loss))
 
-            if i == start_batch_id or i % 300 == 0:
+            if i == start_batch_id or i % 100 == 0:
                 save_images(fake_A_, [batch_size, 1],'G://{}//fake_A_{:02d}_{:06d}.jpg'.format(sample_dir, epoch, i + 1))
-                save_images(fake_B_, [batch_size, 1],'G://{}//fake_B_{:02d}_{:06d}.jpg'.format(sample_dir, epoch, i + 1))
-                save_images(batch_A_images, [batch_size, 1],'G://{}//batch_A_images_{:02d}_{:06d}.jpg'.format(sample_dir, epoch, i + 1))
+                #save_images(fake_B_, [batch_size, 1],'G://{}//fake_B_{:02d}_{:06d}.jpg'.format(sample_dir, epoch, i + 1))
+                #save_images(batch_A_images, [batch_size, 1],'G://{}//batch_A_images_{:02d}_{:06d}.jpg'.format(sample_dir, epoch, i + 1))
                 save_images(batch_B_images, [batch_size, 1],'G://{}//batch_B_images_{:02d}_{:06d}.jpg'.format(sample_dir, epoch, i + 1))
 
-                # checkpoint save
+            # checkpoint save
+            if i % 300 == 0:
                 save(checkpoint_dir,counter,sess,saver)
 
 
