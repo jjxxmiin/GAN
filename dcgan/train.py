@@ -27,7 +27,7 @@ d_train = tf.train.AdamOptimizer(learning_rate=model.learning_rate, beta1=0.5).m
 g_train = tf.train.AdamOptimizer(learning_rate=model.learning_rate, beta1=0.5).minimize(g_cost,
                                                                                        var_list=model.G_var_list)
 
-r = reader.reader('C://Users//woals//Git_store//dataset//celeba//', model.batch_size, (64, 64))
+r = reader.reader('G://dataset//gan dataset//celebA//', model.batch_size, [64, 64])
 
 noise_test = np.random.normal(size=(model.batch_size, model.noise_n))
 
@@ -57,5 +57,5 @@ with tf.Session() as sess:
 
             if step == 0 or (step + 1) % 100 == 0:
                 generated_samples = model.test_generator(noise_test, model.batch_size, sess)
-                savepath = 'C://Users//woals//Git_store//dataset//dcgan_result//test_'+str(epoch)+'_'+str(step)+'.jpg'
+                savepath = 'G://dataset//dcgan_result//'+str(epoch)+'_'+str(step)+'.jpg'
                 reader.batch_visualization(generated_samples, (14, 14), savepath)
